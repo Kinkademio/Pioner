@@ -1,9 +1,38 @@
+using UnityEngine;
+using UnityEngine.UI;
+
 public abstract class Effect
 {
     protected int damage;
     protected float duration;
     protected float procTime;
+    protected Sprite icon;
+    protected GameObject bulletPrefab;
 
+    public Effect()
+    {
+        EffectData data = Resources.Load<EffectData>(this.GetType().Name);
+        this.damage = data.GetDamage();
+        this.duration = data.GetDuration();
+        this.procTime = data.GetProcTime();
+        this.icon= data.GetIcon();
+        this.bulletPrefab= data.GetBulletPrefab();
+    }
+    /**
+     * Получить префаб пули
+     */
+    public GameObject GetBulletPrefab()
+    {
+        return this.bulletPrefab;
+    }
+
+    /**
+     * Получть иконку эффекта
+     */
+    public Sprite GetIcon()
+    {
+        return this.icon;
+    }
     /**
      * Получение длительности еффекта
      */
@@ -56,5 +85,5 @@ public abstract class Effect
     /**
      * Синергия эффектов
      */
-    public abstract void Synergy(Effect effect);
+    public abstract Effect Synergy(Effect effect);
 }

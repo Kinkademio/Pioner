@@ -4,16 +4,29 @@ using UnityEngine;
 
 public class WorldEntity : MonoBehaviour
 {
-    [SerializeField] int health;
-    private bool canBeAffectedByEffect;
-    private Effect imposedEffect;
+    protected int _currentHealth;
+    protected bool _canBeAffectedByEffect;
+    protected Effect _imposedEffect;
+    [SerializeField] protected int maxHealth;
+    [SerializeField] GameObject damageCounterReference = null;
+    [SerializeField] DamageCounter damageCounter;
+    private bool _imposed;
 
+    protected void Start()
+    {
+        this._imposed= false;
+        this._currentHealth = this.maxHealth;
+        if (this.damageCounterReference)
+        {
+            this.damageCounter = Instantiate(this.damageCounterReference, transform).GetComponent<DamageCounter>();
+        }
+    }
     /**
-     * Получение здоровья мирового объекта
+     * Получение текущего здоровья мирового объекта
      */
     public int GetHealth()
     {
-        return this.health;
+        return this._currentHealth;
     }
 
     /**
@@ -21,10 +34,10 @@ public class WorldEntity : MonoBehaviour
      */
     public void SetHealth(int health)
     {
-        this.health = health;
-        if (this.health <= 0)
+        this._currentHealth = health;
+        if (this._currentHealth <= 0)
         {
-            Destroy(gameObject);
+            this.Die();
         }
     }
 
@@ -39,7 +52,7 @@ public class WorldEntity : MonoBehaviour
      */
     public Effect GetImposedEffect()
     {
-        return this.imposedEffect;
+        return this._imposedEffect;
     }
 
     /**
@@ -47,7 +60,7 @@ public class WorldEntity : MonoBehaviour
      */
     public void SetBeAffectedByEffect(bool isAffectable)
     {
-        this.canBeAffectedByEffect = isAffectable;
+        this._canBeAffectedByEffect = isAffectable;
     }
 
     /**
@@ -55,7 +68,7 @@ public class WorldEntity : MonoBehaviour
     */
     public bool GetBeAffectedByEffect()
     {
-        return this.canBeAffectedByEffect;
+        return this._canBeAffectedByEffect;
     }
 
     /**
@@ -63,42 +76,87 @@ public class WorldEntity : MonoBehaviour
      */
     public void ImposedByEffect(Effect effect = null)
     {
-        if (effect != null && canBeAffectedByEffect)
+        StopCoroutine("AffectByEffect");
+        if (effect != null && _canBeAffectedByEffect)
         {
             //Сохраняем старый эффект
-            Effect lastEffect = this.imposedEffect;
+            Effect lastEffect = this._imposedEffect;
 
             //Устанавливаем на себя эффект 
-            this.imposedEffect = effect;
+            this._imposedEffect = effect;
 
             //Синергия элементов
             if(lastEffect != null)
             {
-                this.imposedEffect.Synergy(lastEffect);
+                this._imposedEffect  =  this._imposedEffect.Synergy(lastEffect);
             }
-
-            //Заускаем корутину на наложение эффекта
-            StartCoroutine(AffectByEffect());
+            float duration = this._imposedEffect.GetDuration();
+            //Заускаем корутину на наложение эффекта    
+            StartCoroutine(AffectByEffect(duration));
         }   
     }
 
     /**
      * Прок эффекта на мировом объекте (Корутина)
      */
-    private IEnumerator AffectByEffect()
+    private IEnumerator AffectByEffect(float duration)
     {
-        if (this.imposedEffect != null)
+        if (this._imposedEffect != null)
         {
             //Отнимаем здороье
-            this.SetHealth(this.GetHealth() - this.imposedEffect.GetDamage());
-
+            this.TakeDamage(this._imposedEffect.GetDamage());
+            
+            
             //Вызываем прок эффекта если его действие не завершилось
-            if (this.imposedEffect.GetDuration() > 0.0f)
+            if (duration > 0.0f)
             {
-                this.imposedEffect.SetDuration(this.imposedEffect.GetDuration() - this.imposedEffect.GetProcTime());
-                yield return new WaitForSeconds(this.imposedEffect.GetProcTime());
-                StartCoroutine(AffectByEffect());
+                duration -= this._imposedEffect.GetProcTime();
+                yield return new WaitForSeconds(this._imposedEffect.GetProcTime());
+                StartCoroutine(AffectByEffect(duration));
             }
         } 
+    }
+
+    /**
+     * Получение урона
+     */
+    public void TakeDamage(int damage)
+    {
+        
+        if(damage > 0)
+        {
+            Debug.Log(damage);
+            StartCoroutine(DamageTaked(damage));
+            this.SetHealth(this.GetHealth() - damage);
+            Debug.Log("Дошло");
+        }
+    }
+
+    /**
+     * Эффект при получиении урона
+     */
+    private IEnumerator DamageTaked(int damage)
+    {
+        SpriteRenderer render = this.gameObject.GetComponent<SpriteRenderer>();
+        Color oldColor = render.color;
+        //Окрашиваем получившего урон в красный
+        render.color = new Color(0.7924f, 0.3625846f, 0.3625846f);
+        //Выводим символ с уроном
+        if (this.damageCounter != null)
+        {
+            this.damageCounter.PrintDamage(damage);
+        }
+        yield return new WaitForSeconds(0.1f);
+        //Возвращаем прежний цвет
+        render.color = oldColor;
+
+    }
+    /**
+     * Уничтожает мировую сущьность
+     */
+    public void Die()
+    {
+        Debug.Log("Вызывается у Сущности.");
+        Destroy(gameObject);
     }
 }

@@ -1,23 +1,22 @@
+using UnityEngine;
+
 public class PolymerEffect : Effect
 {
-    public PolymerEffect()
+    public override Effect Synergy(Effect effect)
     {
-        this.damage = 0;
-        this.duration = 5.0f;
-        this.procTime = 0.5f;
-    }
-    public override void Synergy(Effect effect)
-    {
+        PolymerEffect synergy = new PolymerEffect();
+
         if (effect.GetType().Name == typeof(FireEffect).Name)
         {
-            this.damage *= effect.GetDamage() * 2;
-            this.duration /= 2;
+            synergy.damage *= effect.GetDamage() * 2;
+            synergy.duration /= 2;
         }
         if (effect.GetType().Name == typeof(ElectroEffect).Name)
         {
-            this.damage *= effect.GetDamage() * 3;
-            this.duration = 0;
+            synergy.damage *= effect.GetDamage() * 3;
+            synergy.duration = 0;
         }
+        return synergy;
     }
 
 }

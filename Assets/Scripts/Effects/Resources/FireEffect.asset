@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf53d34e88ce6e49a263afb5c1fafdd, type: 3}
+  m_Name: FireEffect
+  m_EditorClassIdentifier: 
+  damage: 5
+  duration: 3
+  prockTime: 0.5
+  icon: {fileID: 21300000, guid: 76215c82aaf5e1d4e85893f5936c0458, type: 3}
+  bulletPrefab: {fileID: 5854231016741595633, guid: 44fb6b616490bf84d9ac0d984082e8f3, type: 3}

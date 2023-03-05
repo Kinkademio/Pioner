@@ -1,25 +1,18 @@
+using UnityEngine;
 public class FireEffect : Effect
 {
-    //Прибъем гвоздями если времени хватит пределаем на Flyweight наверно
-    public FireEffect()
+    public override Effect Synergy(Effect effect)
     {
-        this.damage = 5;
-        this.duration = 3.0f;
-        this.procTime = 0.5f;
-    }
-
-    public override void Synergy(Effect effect)
-    {
-
+        FireEffect synergyEffect = new FireEffect();
         if (effect.GetType().Name == typeof(PolymerEffect).Name)
         {
-            this.damage *= 2;
-            this.duration /= 2;
+            synergyEffect.damage *= 2;
+            synergyEffect.duration /= 2;
         }
         if (effect.GetType().Name == typeof(ElectroEffect).Name)
         {
-            this.damage *= 2;
+            synergyEffect.damage *= 2;
         }
-
+        return synergyEffect;
     }
 }
