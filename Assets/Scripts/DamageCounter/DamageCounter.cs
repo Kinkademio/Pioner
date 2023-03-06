@@ -8,7 +8,7 @@ public class DamageCounter : MonoBehaviour
 
     public void PrintDamage(int damage)
     {
-        CounterSymbol text = Instantiate(counterSymbol, transform);
+        CounterSymbol text = Instantiate(counterSymbol, transform.position, counterSymbol.gameObject.transform.rotation);
         text.Initialize(damage.ToString());
     }
 

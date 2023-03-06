@@ -44,6 +44,13 @@ public class Pool : MonoBehaviour
     }
 
     /**
+     * Получение общего кол-ва объектов хранящихся в пуле
+     */
+    public int GetMaxCountOfPoolObjects()
+    {
+        return this.countOfObjects;
+    }
+    /**
      * Инициализация
      */
     private void InitializePool()

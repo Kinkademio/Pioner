@@ -38,22 +38,24 @@ public class Player : WorldEntity
 
     private void Update()
     {
-        //Атака
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Time.timeScale != 0)
         {
-            this.alternativeWeapon.Attack();
+            //Атака
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                this.alternativeWeapon.Attack();
+            }
+            //Передвижение по горизонатли (вперед и назад)
+            if (Input.GetAxis("Horizontal") != 0)
+            {
+                this.Move();
+            }
+            //Прыжки
+            if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+            {
+                this.Jump();
+            }
         }
-        //Передвижение по горизонатли (вперед и назад)
-        if (Input.GetAxis("Horizontal") != 0)
-        {
-            this.Move();
-        }
-        //Прыжки
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            this.Jump();
-        }
-
     }
 
     /**

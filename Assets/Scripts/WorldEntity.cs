@@ -7,18 +7,26 @@ public class WorldEntity : MonoBehaviour
     protected int _currentHealth;
     protected bool _canBeAffectedByEffect;
     protected Effect _imposedEffect;
+    private DamageCounter damageCounter;
     [SerializeField] protected int maxHealth;
     [SerializeField] GameObject damageCounterReference = null;
-    [SerializeField] DamageCounter damageCounter;
-    private bool _imposed;
+    [SerializeField] bool isInvulnerable = false;
+
+    private Color baseColor;
+    private SpriteRenderer renderer;
 
     protected void Start()
     {
-        this._imposed= false;
+        this.SetBeAffectedByEffect(!this.isInvulnerable);
+        this.renderer = this.gameObject.GetComponent<SpriteRenderer>();
+        if (this.renderer != null)
+        {
+            this.baseColor = this.renderer.color;
+        }
         this._currentHealth = this.maxHealth;
         if (this.damageCounterReference)
         {
-            this.damageCounter = Instantiate(this.damageCounterReference, transform).GetComponent<DamageCounter>();
+            this.damageCounter = Instantiate(this.damageCounterReference, transform.position, this.damageCounterReference.transform.rotation).GetComponent<DamageCounter>();
         }
     }
     /**
@@ -76,7 +84,13 @@ public class WorldEntity : MonoBehaviour
      */
     public void ImposedByEffect(Effect effect = null)
     {
+        //Останавливаем все корутины и возвращаем цвет если в процессе корутины он не успел вернуться 
+        if(this.renderer != null)
+        {
+            this.renderer.color = this.baseColor;
+        }
         StopCoroutine("AffectByEffect");
+
         if (effect != null && _canBeAffectedByEffect)
         {
             //Сохраняем старый эффект
@@ -137,10 +151,13 @@ public class WorldEntity : MonoBehaviour
      */
     private IEnumerator DamageTaked(int damage)
     {
-        SpriteRenderer render = this.gameObject.GetComponent<SpriteRenderer>();
-        Color oldColor = render.color;
+
+
         //Окрашиваем получившего урон в красный
-        render.color = new Color(0.7924f, 0.3625846f, 0.3625846f);
+        if(this.renderer!= null)
+        {
+            this.renderer.color = new Color(0.7924f, 0.3625846f, 0.3625846f);
+        }
         //Выводим символ с уроном
         if (this.damageCounter != null)
         {
@@ -148,8 +165,10 @@ public class WorldEntity : MonoBehaviour
         }
         yield return new WaitForSeconds(0.1f);
         //Возвращаем прежний цвет
-        render.color = oldColor;
-
+        if (this.renderer != null)
+        {
+            this.renderer.color = this.baseColor;
+        }  
     }
     /**
      * Уничтожает мировую сущьность

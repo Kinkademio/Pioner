@@ -7,12 +7,14 @@ public class SovetGlove : Weapon
     [SerializeField] float shootPower;
     [SerializeField] List<Module> _avalibleModules;
     [SerializeField] AvalibleModules modulesUI;
-
+    [SerializeField] BulletController bulletController;
 
     private Module _activeModule;
 
     private void Update()
     {
+        this.bulletController.UpdateBulletCount(mug.GetCountOfPoolObjects(), mug.GetMaxCountOfPoolObjects());
+
         for(int i=0;i<_avalibleModules.Count; i++)
         {
             if (Input.GetKey((KeyCode) 49 + i)) 

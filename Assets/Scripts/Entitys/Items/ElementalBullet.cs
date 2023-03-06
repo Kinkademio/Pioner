@@ -10,8 +10,9 @@ public class ElementalBullet : Bullet
     private const float polymerBulletLifeTime = 10.0f;
     private const float bulletLifeTime = 1.0f;
 
-    private void Start()
+    private new void Start()
     {
+        base.Start();
         //Определяем магазин у пули
         this.mug = gameObject.GetComponentInParent<Pool>();
     }
